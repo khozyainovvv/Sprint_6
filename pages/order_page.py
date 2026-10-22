@@ -1,58 +1,45 @@
-from selenium.webdriver.common.by import By
+import allure
+from locators.order_page_locators import OrderPageLocators
 from pages.base_page import BasePage
 
 
 class OrderPage(BasePage):
 
-    NAME_FIELD = (By.XPATH, "//input[@placeholder='* Имя']")
-    SURNAME_FIELD = (By.XPATH, "//input[@placeholder='* Фамилия']")
-    ADDRESS_FIELD = (By.XPATH, "//input[@placeholder='* Адрес: куда привезти заказ']")
-    METRO_FIELD = (By.XPATH, "//input[@placeholder='* Станция метро']")
-    PHONE_FIELD = (By.XPATH, "//input[@placeholder='* Телефон: на него позвонит курьер']")
-    NEXT_BUTTON = (By.XPATH, "//button[text()='Далее']")
-
-    DATE_FIELD = (By.XPATH, "//input[@placeholder='* Когда привезти самокат']")
-    RENT_DROPDOWN = (By.XPATH, "//div[contains(@class, 'Dropdown-control')]")
-    COLOR_BLACK = (By.ID, "black")
-    COLOR_GREY = (By.ID, "grey")
-    COMMENT_FIELD = (By.XPATH, "//input[@placeholder='Комментарий для курьера']")
-    BACK_BUTTON = (By.XPATH, "//button[text()='Назад']")
-    ORDER_BUTTON = (By.XPATH, "//div[contains(@class, 'Order_Buttons')]//button[text()='Заказать']")
-
-    CONFIRM_YES = (By.XPATH, "//button[text()='Да']")
-    CONFIRM_NO = (By.XPATH, "//button[text()='Нет']")
-
-    SUCCESS_TITLE = (By.XPATH, "//div[contains(@class, 'Order_ModalHeader') and contains(text(), 'Заказ оформлен')]")
-    VIEW_STATUS_BUTTON = (By.XPATH, "//button[text()='Посмотреть статус']")
-
+    @allure.step("Заполнить шаг 1: имя={name}, фамилия={surname}, адрес={address}, метро={metro}, телефон={phone}")
     def fill_step_1(self, name, surname, address, metro, phone):
-        self.find_element(self.NAME_FIELD).send_keys(name)
-        self.find_element(self.SURNAME_FIELD).send_keys(surname)
-        self.find_element(self.ADDRESS_FIELD).send_keys(address)
+        self.find_element(OrderPageLocators.NAME_FIELD).send_keys(name)
+        self.find_element(OrderPageLocators.SURNAME_FIELD).send_keys(surname)
+        self.find_element(OrderPageLocators.ADDRESS_FIELD).send_keys(address)
 
-        metro_field = self.find_element(self.METRO_FIELD)
+        metro_field = self.find_element(OrderPageLocators.METRO_FIELD)
         metro_field.send_keys(metro)
-        self.click_element((By.XPATH, f"//div[contains(@class, 'Order_Text') and text()='{metro}']"))
+        self.click_element(OrderPageLocators.metro_option(metro))
 
-        self.find_element(self.PHONE_FIELD).send_keys(phone)
-        self.click_element(self.NEXT_BUTTON)
+        self.find_element(OrderPageLocators.PHONE_FIELD).send_keys(phone)
+        self.click_element(OrderPageLocators.NEXT_BUTTON)
 
+    @allure.step("Заполнить шаг 2: дата={date}, срок={rent_period}, цвет={color}")
     def fill_step_2(self, date, rent_period, color):
-        self.find_element(self.DATE_FIELD).send_keys(date)
+        self.find_element(OrderPageLocators.DATE_FIELD).send_keys(date)
         day = date.split('.')[0]
-        self.click_element((By.XPATH, f"//div[contains(@class, 'react-datepicker__day') and text()='{day}']"))
-        self.click_element(self.RENT_DROPDOWN)
-        self.click_element((By.XPATH, f"//div[contains(@class, 'Dropdown-option') and text()='{rent_period}']"))
+        self.click_element(OrderPageLocators.date_day(day))
+
+        self.click_element(OrderPageLocators.RENT_DROPDOWN)
+        self.click_element(OrderPageLocators.rent_option(rent_period))
+
         if color == "black":
-            self.click_element(self.COLOR_BLACK)
+            self.click_element(OrderPageLocators.COLOR_BLACK)
         elif color == "grey":
-            self.click_element(self.COLOR_GREY)
-        self.find_element(self.COMMENT_FIELD).send_keys("Тестовый комментарий")
-        self.click_element(self.ORDER_BUTTON)
-        self.click_element(self.CONFIRM_YES)
+            self.click_element(OrderPageLocators.COLOR_GREY)
 
+        self.find_element(OrderPageLocators.COMMENT_FIELD).send_keys("Тестовый комментарий")
+        self.click_element(OrderPageLocators.ORDER_BUTTON)
+        self.click_element(OrderPageLocators.CONFIRM_YES)
+
+    @allure.step("Проверить, что модальное окно «Заказ оформлен» отображается")
     def is_success_modal_displayed(self):
-        return self.find_element(self.SUCCESS_TITLE).is_displayed()
+        return self.find_element(OrderPageLocators.SUCCESS_TITLE).is_displayed()
 
+    @allure.step("Клик по кнопке «Посмотреть статус»")
     def click_view_status(self):
-        self.click_element(self.VIEW_STATUS_BUTTON)
+        self.click_element(OrderPageLocators.VIEW_STATUS_BUTTON)

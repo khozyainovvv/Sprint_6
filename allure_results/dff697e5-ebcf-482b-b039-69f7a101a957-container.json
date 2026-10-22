@@ -1,0 +1,1 @@
+{"uuid": "6c489e98-a044-4347-a3bf-46eb4cb8d235", "befores": [{"name": "metro", "status": "passed", "start": 1792692976219, "stop": 1792692976219}], "afters": [{"name": "metro::<lambda>", "start": 1792692988878}], "start": 1792692976219, "stop": 1792692988878}
